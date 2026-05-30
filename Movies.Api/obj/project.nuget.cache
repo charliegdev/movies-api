@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "EJO8CZyGREY=",
+  "success": true,
+  "projectFilePath": "/home/charlie/Repos/dometrain/0-to-hero-rest-api-dotnet/1.GettingStarted/Movies.Api/Movies.Api.csproj",
+  "expectedPackageFiles": [
+    "/home/charlie/.nuget/packages/microsoft.aspnetcore.openapi/10.0.8/microsoft.aspnetcore.openapi.10.0.8.nupkg.sha512",
+    "/home/charlie/.nuget/packages/microsoft.openapi/2.0.0/microsoft.openapi.2.0.0.nupkg.sha512"
+  ],
+  "logs": []
+}
