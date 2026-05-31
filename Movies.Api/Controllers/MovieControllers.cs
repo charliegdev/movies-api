@@ -38,4 +38,25 @@ public class MovieController : ControllerBase
 
         return Ok(movies.MapToResponse());
     }
+
+    [HttpPut(ApiEndpoints.Movies.Update)]
+    public async Task<IActionResult> Update(
+        [FromRoute] Guid id,
+        [FromBody] UpdateMovieRequest request
+    )
+    {
+        var movie = request.MapToMovie(id);
+
+        bool isUpdated = await _movieRepository.UpdateAsync(movie);
+
+        return isUpdated ? Ok(movie.MapToResponse()) : NotFound();
+    }
+
+    [HttpDelete(ApiEndpoints.Movies.Delete)]
+    public async Task<IActionResult> Delete([FromRoute] Guid id)
+    {
+        bool isDeleted = await _movieRepository.DeleteAsync(id);
+
+        return isDeleted ? Ok() : NotFound();
+    }
 }
