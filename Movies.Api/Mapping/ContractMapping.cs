@@ -1,5 +1,6 @@
 using Movies.Application.Models;
 using Movies.Contracts.Requests;
+using Movies.Contracts.Responses;
 
 namespace Movies.Api.Mapping;
 
@@ -14,5 +15,21 @@ public static class ContractMapping
             YearOfRelease = request.YearOfRelease,
             Genres = [.. request.Genres],
         };
+    }
+
+    public static MovieResponse MapToResponse(this Movie movie)
+    {
+        return new MovieResponse
+        {
+            Id = movie.Id,
+            Title = movie.Title,
+            YearOfRelease = movie.YearOfRelease,
+            Genres = movie.Genres,
+        };
+    }
+
+    public static MoviesResponse MapToResponse(this IEnumerable<Movie> movies)
+    {
+        return new MoviesResponse { Items = movies.Select(m => m.MapToResponse()) };
     }
 }
