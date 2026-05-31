@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+# Start (or create) the course PostgreSQL database.
+# Safe to run from inside a distrobox/toolbox container or directly on the host.
+set -euo pipefail
+
+CONTAINER_NAME="movies-db"
+IMAGE="docker.io/library/postgres:18"
+VOLUME="movies-db-data"
+
+# When running inside a container, reach the host's podman; otherwise use podman directly.
+if [ -f /run/.containerenv ] || [ -n "${CONTAINER_ID:-}" ]; then
+  PODMAN="distrobox-host-exec podman"
+else
+  PODMAN="podman"
+fi
+
+if $PODMAN container exists "$CONTAINER_NAME"; then
+  echo "Resuming existing '$CONTAINER_NAME'..."
+  $PODMAN start "$CONTAINER_NAME"
+else
+  echo "Creating '$CONTAINER_NAME'..."
+  $PODMAN run -d --name "$CONTAINER_NAME" --restart unless-stopped \
+    -e POSTGRES_USER=course \
+    -e POSTGRES_PASSWORD=changeme \
+    -e POSTGRES_DB=movies \
+    -p 5432:5432 \
+    -v "$VOLUME":/var/lib/postgresql \
+    "$IMAGE"
+fi
+
+echo "PostgreSQL is up on localhost:5432  (db=movies, user=course, password=changeme)"

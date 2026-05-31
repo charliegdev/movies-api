@@ -1,0 +1,16 @@
+services:
+  db:
+    image: postgres:18
+    container_name: movies-db
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=course
+      - POSTGRES_PASSWORD=changeme
+      - POSTGRES_DB=movies
+    ports:
+      - '5432:5432'
+    volumes:
+      - movies-db-data:/var/lib/postgresql
+
+volumes:
+  movies-db-data:

@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+# Stop the course PostgreSQL database. Data is preserved; run ./start to resume.
+# Safe to run from inside a distrobox/toolbox container or directly on the host.
+set -euo pipefail
+
+CONTAINER_NAME="movies-db"
+
+# When running inside a container, reach the host's podman; otherwise use podman directly.
+if [ -f /run/.containerenv ] || [ -n "${CONTAINER_ID:-}" ]; then
+  PODMAN="distrobox-host-exec podman"
+else
+  PODMAN="podman"
+fi
+
+if $PODMAN container exists "$CONTAINER_NAME"; then
+  echo "Stopping '$CONTAINER_NAME'..."
+  $PODMAN stop "$CONTAINER_NAME"
+  echo "Stopped. Data is preserved; run ./start to resume."
+else
+  echo "'$CONTAINER_NAME' does not exist yet. Run ./start to create it."
+fi
