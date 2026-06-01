@@ -32,7 +32,7 @@ public class MovieValidator : AbstractValidator<Movie>
         CancellationToken token = default
     )
     {
-        var existingMovie = await _movieRepository.GetBySlugAsync(slug);
+        var existingMovie = await _movieRepository.GetBySlugAsync(slug, token);
 
         if (existingMovie is not null)
         {

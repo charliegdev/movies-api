@@ -2,14 +2,9 @@ using Dapper;
 
 namespace Movies.Application.Database;
 
-public class DbInitializer
+public class DbInitializer(IDbConnectionFactory dbConnectionFactory)
 {
-    private readonly IDbConnectionFactory _dbConnectionFactory;
-
-    public DbInitializer(IDbConnectionFactory dbConnectionFactory)
-    {
-        _dbConnectionFactory = dbConnectionFactory;
-    }
+    private readonly IDbConnectionFactory _dbConnectionFactory = dbConnectionFactory;
 
     public async Task InitializeAsync()
     {
