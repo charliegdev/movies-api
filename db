@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+# Open an interactive psql session against the course PostgreSQL database.
+# Safe to run from inside a distrobox/toolbox container or directly on the host.
+set -euo pipefail
+
+CONTAINER_NAME="movies-db"
+DB_USER="course"
+DB_NAME="movies"
+
+# When running inside a container, reach the host's podman; otherwise use podman directly.
+if [ -f /run/.containerenv ] || [ -n "${CONTAINER_ID:-}" ]; then
+  PODMAN="distrobox-host-exec podman"
+else
+  PODMAN="podman"
+fi
+
+if ! $PODMAN container exists "$CONTAINER_NAME"; then
+  echo "'$CONTAINER_NAME' does not exist yet. Run ./start first."
+  exit 1
+fi
+
+# Pass any arguments straight through to psql, so `./db -c "select * from movies;"`
+# runs a one-off query, while `./db` with no args opens an interactive session.
+$PODMAN exec -it "$CONTAINER_NAME" psql -U "$DB_USER" -d "$DB_NAME" "$@"

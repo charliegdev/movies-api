@@ -15,6 +15,7 @@ public class DbInitializer
     {
         using var connection = await _dbConnectionFactory.CreateConnectionAsync();
 
+        // Create a new movie database if not exist
         await connection.ExecuteAsync(
             """
                 create table if not exists movies (
@@ -25,11 +26,21 @@ public class DbInitializer
             """
         );
 
+        // Give slug an index as well
         await connection.ExecuteAsync(
             """
             create unique index concurrently if not exists movies_slug_idx
             on movies
             using btree(slug);
+            """
+        );
+
+        // Create a table for genres as well
+        await connection.ExecuteAsync(
+            """
+            create table if not exists genres (
+            movieid UUID references movies (Id),
+            name TEXT not null);
             """
         );
     }
