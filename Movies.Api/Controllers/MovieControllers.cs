@@ -1,7 +1,6 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.VisualBasic;
 using Movies.Api.Mapping;
-using Movies.Application.Repositories;
 using Movies.Application.Services;
 using Movies.Contracts.Requests;
 
@@ -12,6 +11,7 @@ public class MovieController(IMovieService movieService) : ControllerBase
 {
     private readonly IMovieService _movieService = movieService;
 
+    [Authorize(AuthConstants.TrustedMemberPolicy)]
     [HttpPost(ApiEndpoints.Movies.Create)]
     public async Task<IActionResult> Create(
         [FromBody] CreateMovieRequest request,
@@ -41,6 +41,7 @@ public class MovieController(IMovieService movieService) : ControllerBase
         return Ok(movies.MapToResponse());
     }
 
+    [Authorize(AuthConstants.TrustedMemberPolicy)]
     [HttpPut(ApiEndpoints.Movies.Update)]
     public async Task<IActionResult> Update(
         [FromRoute] Guid id,
@@ -55,6 +56,7 @@ public class MovieController(IMovieService movieService) : ControllerBase
         return updatedMovie is not null ? Ok(updatedMovie.MapToResponse()) : NotFound();
     }
 
+    [Authorize(AuthConstants.AdminPolicy)]
     [HttpDelete(ApiEndpoints.Movies.Delete)]
     public async Task<IActionResult> Delete([FromRoute] Guid id, CancellationToken token)
     {
