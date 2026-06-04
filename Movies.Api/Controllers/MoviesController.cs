@@ -8,7 +8,7 @@ using Movies.Contracts.Requests;
 namespace Movies.Api.Controllers;
 
 [ApiController]
-public class MovieController(IMovieService movieService) : ControllerBase
+public class MoviesController(IMovieService movieService) : ControllerBase
 {
     private readonly IMovieService _movieService = movieService;
 

@@ -1,3 +1,4 @@
+using System.Data;
 using Dapper;
 using Movies.Application.Database;
 
@@ -44,5 +45,34 @@ public class RatingRepository(IDbConnectionFactory dbConnectionFactory) : IRatin
                 cancellationToken: token
             )
         );
+    }
+
+    public async Task<bool> RateMovieAsync(
+        Guid movieId,
+        int rating,
+        Guid userId,
+        CancellationToken token
+    )
+    {
+        using var connnection = await _dbConnectionFactory.CreateConnectionAsync(token);
+        var result = await connnection.ExecuteAsync(
+            new CommandDefinition(
+                """
+                insert into ratings(userid, movieid, rating)
+                values (@userId, @movieId, @rating)
+                on conflict (userid, movieid) do update
+                    set rating = @rating
+                """,
+                new
+                {
+                    userId,
+                    movieId,
+                    rating,
+                },
+                cancellationToken: token
+            )
+        );
+
+        return result > 0;
     }
 }

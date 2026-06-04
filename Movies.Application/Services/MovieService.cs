@@ -26,9 +26,9 @@ public class MovieService(
         return _movieRepository.DeleteAsync(id, token);
     }
 
-    public Task<bool> ExistsById(Guid id, CancellationToken token = default)
+    public Task<bool> ExistsByIdAsync(Guid id, CancellationToken token = default)
     {
-        return _movieRepository.ExistsById(id, token);
+        return _movieRepository.ExistsByIdAsync(id, token);
     }
 
     public Task<IEnumerable<Movie>> GetAllAsync(
@@ -65,7 +65,7 @@ public class MovieService(
     {
         await _movieValidator.ValidateAndThrowAsync(movie, cancellationToken: token);
 
-        var movieExists = await _movieRepository.ExistsById(movie.Id, token);
+        var movieExists = await _movieRepository.ExistsByIdAsync(movie.Id, token);
 
         if (!movieExists)
         {
