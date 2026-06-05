@@ -3,14 +3,9 @@ using Npgsql;
 
 namespace Movies.Application.Database;
 
-public class NpgsqlConnectionFactory : IDbConnectionFactory
+public class NpgsqlConnectionFactory(string connectionString) : IDbConnectionFactory
 {
-    private readonly string _connectionString;
-
-    public NpgsqlConnectionFactory(string connectionString)
-    {
-        _connectionString = connectionString;
-    }
+    private readonly string _connectionString = connectionString;
 
     public async Task<IDbConnection> CreateConnectionAsync(CancellationToken token = default)
     {

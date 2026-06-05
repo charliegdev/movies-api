@@ -75,4 +75,26 @@ public class RatingRepository(IDbConnectionFactory dbConnectionFactory) : IRatin
 
         return result > 0;
     }
+
+    public async Task<bool> DeleteRatingAsync(
+        Guid movieId,
+        Guid userId,
+        CancellationToken token = default
+    )
+    {
+        using var connnection = await _dbConnectionFactory.CreateConnectionAsync(token);
+        var result = await connnection.ExecuteAsync(
+            new CommandDefinition(
+                """
+                delete from ratings
+                where userid = @userId 
+                and movieid = @movieId
+                """,
+                new { userId, movieId },
+                cancellationToken: token
+            )
+        );
+
+        return result > 0;
+    }
 }

@@ -8,4 +8,5 @@ public interface IRatingService
         Guid userId,
         CancellationToken token = default
     );
+    Task<bool> DeleteRatingAsync(Guid movieId, Guid userId, CancellationToken token = default);
 }
