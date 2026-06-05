@@ -1,5 +1,6 @@
 using FluentValidation;
 using FluentValidation.Results;
+using Movies.Application.Models;
 using Movies.Application.Repositories;
 
 namespace Movies.Application.Services;
@@ -41,5 +42,13 @@ public class RatingService(IRatingRepository ratingRepository, IMovieRepository 
     )
     {
         return await _ratingRepository.DeleteRatingAsync(movieId, userId, token);
+    }
+
+    public async Task<IEnumerable<MovieRating>> GetAllMyRatingsAsync(
+        Guid userId,
+        CancellationToken token = default
+    )
+    {
+        return await _ratingRepository.GetAllMyRatingsAsync(userId, token);
     }
 }
