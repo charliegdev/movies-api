@@ -62,11 +62,34 @@ public static class ContractMapping
 
     public static GetAllMoviesOptions MapToOptions(this GetAllMoviesRequest request)
     {
-        return new GetAllMoviesOptions { Title = request.Title, YearOfRelease = request.Year };
+        var (field, order) = GetSortValues(request.SortBy);
+
+        return new GetAllMoviesOptions
+        {
+            Title = request.Title,
+            YearOfRelease = request.Year,
+            SortOrder = order,
+            SortByField = field,
+        };
     }
 
     public static GetAllMoviesOptions WithUserId(this GetAllMoviesOptions options, Guid? userId)
     {
         return options with { UserId = userId };
+    }
+
+    private static (string? field, SortOrder? order) GetSortValues(string? sortBy)
+    {
+        if (sortBy is null)
+        {
+            return (null, null);
+        }
+
+        var order = sortBy.StartsWith('-') ? SortOrder.Descending : SortOrder.Ascending;
+
+        var trimmed = sortBy.TrimStart('+', '-').ToLowerInvariant();
+
+        // * Will validate and possibly reject in Invalidator later.
+        return string.IsNullOrWhiteSpace(trimmed) ? (null, null) : (trimmed, order);
     }
 }
