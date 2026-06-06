@@ -59,4 +59,14 @@ public static class ContractMapping
             }),
         };
     }
+
+    public static GetAllMoviesOptions MapToOptions(this GetAllMoviesRequest request)
+    {
+        return new GetAllMoviesOptions { Title = request.Title, YearOfRelease = request.Year };
+    }
+
+    public static GetAllMoviesOptions WithUserId(this GetAllMoviesOptions options, Guid? userId)
+    {
+        return options with { UserId = userId };
+    }
 }

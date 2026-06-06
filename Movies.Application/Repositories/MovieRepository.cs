@@ -142,7 +142,7 @@ public class MovieRepository(IDbConnectionFactory dbConnectionFactory) : IMovieR
     }
 
     public async Task<IEnumerable<Movie>> GetAllAsync(
-        Guid? userId = default,
+        GetAllMoviesOptions options,
         CancellationToken token = default
     )
     {
@@ -151,18 +151,26 @@ public class MovieRepository(IDbConnectionFactory dbConnectionFactory) : IMovieR
         var result = await connection.QueryAsync(
             new CommandDefinition(
                 """
-                select m.*,
-                       string_agg(distinct g.name, ',') as genres,
-                       round(avg(r.rating), 1) as rating,
-                       myr.rating as userrating
+                select 
+                    m.*,
+                    string_agg(distinct g.name, ',') as genres,
+                    round(avg(r.rating), 1) as rating,
+                    myr.rating as userrating
                 from movies m
                 left join genres g on m.id = g.movieid
                 left join ratings r on m.id = r.movieid
                 left join ratings myr on m.id = myr.movieid
                     and myr.userid = @userId
+                where (@title is null or m.title ilike ('%' || @title || '%'))
+                and (@yearofrelease is null or m.yearofrelease = @yearofrelease)
                 group by id, userrating
                 """,
-                new { userId },
+                new
+                {
+                    userId = options.UserId,
+                    title = options.Title,
+                    yearofrelease = options.YearOfRelease,
+                },
                 cancellationToken: token
             )
         );
