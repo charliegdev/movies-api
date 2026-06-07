@@ -9,6 +9,7 @@ using Movies.Contracts.Requests;
 namespace Movies.Api.Controllers;
 
 [ApiVersion(1.0)]
+[ApiVersion(2.0)]
 [ApiController]
 public class MoviesController(IMovieService movieService) : ControllerBase
 {
@@ -23,11 +24,25 @@ public class MoviesController(IMovieService movieService) : ControllerBase
     {
         var movie = request.MapToMovie();
         await _movieService.CreateAsync(movie, token);
-        return CreatedAtAction(nameof(Get), new { idOrSlug = movie.Id }, movie);
+        return CreatedAtAction(nameof(GetV1), new { idOrSlug = movie.Id }, movie);
     }
 
+    [MapToApiVersion(1.0)]
     [HttpGet(ApiEndpoints.Movies.Get)]
-    public async Task<IActionResult> Get([FromRoute] string idOrSlug, CancellationToken token)
+    public async Task<IActionResult> GetV1([FromRoute] string idOrSlug, CancellationToken token)
+    {
+        var userId = HttpContext.GetUserId();
+
+        var movie = Guid.TryParse(idOrSlug, out var id)
+            ? await _movieService.GetByIdAsync(id, userId, token)
+            : await _movieService.GetBySlugAsync(idOrSlug, userId, token);
+
+        return movie is null ? NotFound() : Ok(movie.MapToResponse());
+    }
+
+    [MapToApiVersion(2.0)]
+    [HttpGet(ApiEndpoints.Movies.Get)]
+    public async Task<IActionResult> GetV2([FromRoute] string idOrSlug, CancellationToken token)
     {
         var userId = HttpContext.GetUserId();
 
