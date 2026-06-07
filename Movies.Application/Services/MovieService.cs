@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using FluentValidation;
 using Movies.Application.Models;
 using Movies.Application.Repositories;
@@ -94,5 +95,14 @@ public class MovieService(
         }
 
         return movie;
+    }
+
+    public async Task<int> GetCountAsync(
+        string? title,
+        int? yearOfRelease,
+        CancellationToken token = default
+    )
+    {
+        return await _movieRepository.GetCountAsync(title, yearOfRelease, token);
     }
 }

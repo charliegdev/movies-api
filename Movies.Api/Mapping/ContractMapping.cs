@@ -31,9 +31,20 @@ public static class ContractMapping
         };
     }
 
-    public static MoviesResponse MapToResponse(this IEnumerable<Movie> movies)
+    public static MoviesResponse MapToResponse(
+        this IEnumerable<Movie> movies,
+        int? page,
+        int? pageSize,
+        int total
+    )
     {
-        return new MoviesResponse { Items = movies.Select(m => m.MapToResponse()) };
+        return new MoviesResponse
+        {
+            Items = movies.Select(m => m.MapToResponse()),
+            PageSize = pageSize,
+            Page = page,
+            Total = total,
+        };
     }
 
     public static Movie MapToMovie(this UpdateMovieRequest request, Guid id)
@@ -70,6 +81,8 @@ public static class ContractMapping
             YearOfRelease = request.Year,
             SortOrder = order,
             SortByField = field,
+            Page = request.Page,
+            PageSize = request.PageSize,
         };
     }
 
