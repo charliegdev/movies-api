@@ -3,6 +3,7 @@ using Asp.Versioning;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Movies.Api.Auth;
+using Movies.Api.Health;
 using Movies.Api.Mapping;
 using Movies.Application;
 using Movies.Application.Database;
@@ -62,6 +63,7 @@ builder
     })
     .AddMvc();
 builder.Services.AddControllers();
+builder.Services.AddHealthChecks().AddCheck<DatabaseHealthChecks>(DatabaseHealthChecks.Name);
 builder.Services.AddDatabase(config["Database:ConnectionString"]!);
 
 var app = builder.Build();
@@ -73,6 +75,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.MapHealthChecks("_health");
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
