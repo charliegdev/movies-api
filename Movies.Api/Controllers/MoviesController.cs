@@ -28,6 +28,11 @@ public class MoviesController(IMovieService movieService) : ControllerBase
     }
 
     [HttpGet(ApiEndpoints.Movies.Get)]
+    [ResponseCache(
+        Duration = 30,
+        VaryByHeader = "Accept, Accept-Encoding",
+        Location = ResponseCacheLocation.Any
+    )]
     public async Task<IActionResult> Get([FromRoute] string idOrSlug, CancellationToken token)
     {
         var userId = HttpContext.GetUserId();
@@ -39,6 +44,12 @@ public class MoviesController(IMovieService movieService) : ControllerBase
         return movie is null ? NotFound() : Ok(movie.MapToResponse());
     }
 
+    [ResponseCache(
+        Duration = 30,
+        VaryByHeader = "Accept, Accept-Encoding",
+        VaryByQueryKeys = ["title", "year", "sortby", "page", "pagesize"],
+        Location = ResponseCacheLocation.Any
+    )]
     [HttpGet(ApiEndpoints.Movies.GetAll)]
     public async Task<IActionResult> GetAll(
         [FromQuery] GetAllMoviesRequest request,

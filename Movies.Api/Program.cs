@@ -62,6 +62,7 @@ builder
         x.ApiVersionReader = new MediaTypeApiVersionReader("api-version");
     })
     .AddMvc();
+builder.Services.AddResponseCaching();
 builder.Services.AddControllers();
 builder.Services.AddHealthChecks().AddCheck<DatabaseHealthChecks>(DatabaseHealthChecks.Name);
 builder.Services.AddDatabase(config["Database:ConnectionString"]!);
@@ -79,6 +80,7 @@ app.MapHealthChecks("_health");
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseResponseCaching();
 app.UseMiddleware<ValidationMappingMiddleware>();
 app.MapControllers();
 
