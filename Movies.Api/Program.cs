@@ -62,7 +62,22 @@ builder
         x.ApiVersionReader = new MediaTypeApiVersionReader("api-version");
     })
     .AddMvc();
-builder.Services.AddResponseCaching();
+
+// builder.Services.AddResponseCaching();
+builder.Services.AddOutputCache(x =>
+{
+    x.AddBasePolicy(c => c.Cache());
+    x.AddPolicy(
+        "MovieCache",
+        c =>
+        {
+            c.Cache()
+                .Expire(TimeSpan.FromMinutes(1))
+                .SetVaryByQuery(["title", "year", "sortby", "page", "pagesize"])
+                .Tag("movies");
+        }
+    );
+});
 builder.Services.AddControllers();
 builder.Services.AddHealthChecks().AddCheck<DatabaseHealthChecks>(DatabaseHealthChecks.Name);
 builder.Services.AddDatabase(config["Database:ConnectionString"]!);
@@ -80,7 +95,9 @@ app.MapHealthChecks("_health");
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
-app.UseResponseCaching();
+
+// app.UseResponseCaching();
+app.UseOutputCache();
 app.UseMiddleware<ValidationMappingMiddleware>();
 app.MapControllers();
 
