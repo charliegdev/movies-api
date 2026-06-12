@@ -53,6 +53,8 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddApplication();
 
+builder.Services.AddScoped<ApiKeyAuthFilters>();
+
 builder
     .Services.AddApiVersioning(x =>
     {

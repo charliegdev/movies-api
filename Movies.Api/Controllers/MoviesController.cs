@@ -18,7 +18,8 @@ public class MoviesController(IMovieService movieService, IOutputCacheStore outp
     private readonly IMovieService _movieService = movieService;
     private readonly IOutputCacheStore _outputCacheStore = outputCacheStore;
 
-    [Authorize(AuthConstants.TrustedMemberPolicy)]
+    // [Authorize(AuthConstants.TrustedMemberPolicy)]
+    [ServiceFilter(typeof(ApiKeyAuthFilters))]
     [HttpPost(ApiEndpoints.Movies.Create)]
     public async Task<IActionResult> Create(
         [FromBody] CreateMovieRequest request,
