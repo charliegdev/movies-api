@@ -12,11 +12,15 @@ namespace Movies.Api.Controllers;
 [ApiVersion(1.0)]
 [ApiVersion(2.0)]
 [ApiController]
-public class MoviesController(IMovieService movieService, IOutputCacheStore outputCacheStore)
-    : ControllerBase
+public class MoviesController(
+    IMovieService movieService,
+    IOutputCacheStore outputCacheStore,
+    ILogger<MoviesController> logger
+) : ControllerBase
 {
     private readonly IMovieService _movieService = movieService;
     private readonly IOutputCacheStore _outputCacheStore = outputCacheStore;
+    private readonly ILogger<MoviesController> _logger = logger;
 
     // [Authorize(AuthConstants.TrustedMemberPolicy)]
     [ServiceFilter(typeof(ApiKeyAuthFilters))]
@@ -98,6 +102,8 @@ public class MoviesController(IMovieService movieService, IOutputCacheStore outp
     [HttpDelete(ApiEndpoints.Movies.Delete)]
     public async Task<IActionResult> Delete([FromRoute] Guid id, CancellationToken token)
     {
+        var userId = HttpContext.GetUserId();
+        _logger.LogDebug(userId.ToString());
         bool isDeleted = await _movieService.DeleteAsync(id, token);
 
         await _outputCacheStore.EvictByTagAsync("movies", token);
